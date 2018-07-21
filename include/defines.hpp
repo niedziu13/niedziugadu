@@ -10,7 +10,7 @@
 
 #include <assert.h>
 
-enum ReternCode {
+enum ReturnCode {
     RET_INVALID,
     RET_OK,
     RET_UNEXISTING_OPTION,

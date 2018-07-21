@@ -13,6 +13,7 @@
 #include <vector>
 
 enum ClientMenuOption{
+    ClientOption_InvalidOption,
     ClientOption_Exit,
     ClientOption_PrintUsers,
     ClientOption_ChooseUser,
@@ -23,6 +24,7 @@ class Option {
 public:
     std::string m_message;
     ClientMenuOption m_code;
+    // A char to choose an option. Used only if an action is introduced using char
     char m_key;
     Option(const char* message, ClientMenuOption code, char key);
 };
@@ -32,10 +34,12 @@ private:
     std::vector<Option> m_options;
     int FindOption(ClientMenuOption code, char key);
 public:
-    ReternCode AddOption(const char* message, ClientMenuOption code, char key);
-    ReternCode RemoveOption(const char* message, ClientMenuOption code, char key);
+    ReturnCode AddOption(const char* message, ClientMenuOption code, char key);
+    ReturnCode RemoveOption(const char* message, ClientMenuOption code, char key);
     Option GetOption(unsigned i) const;
     size_t GetNumberOfOptions() const;
+    ReturnCode Initialize();
+    ClientMenuOption GetUserChoice() const;
 };
 
 std::ostream& operator<<(std::ostream& out, const ClientMenu& menu);

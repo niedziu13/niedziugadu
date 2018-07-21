@@ -6,6 +6,7 @@
  */
 
 #include "client_menu.hpp"
+#include "HAL_UI.hpp"
 
 std::ostream& operator<<(std::ostream& out, const ClientMenu& menu) {
     out<<"Following options are possible: " << std::endl;
@@ -34,8 +35,8 @@ int ClientMenu::FindOption(ClientMenuOption code, char key){
 }
 
 
-ReternCode ClientMenu::AddOption(const char* message, ClientMenuOption code, char key){
-    ReternCode ret = RET_OK;
+ReturnCode ClientMenu::AddOption(const char* message, ClientMenuOption code, char key){
+    ReturnCode ret = RET_OK;
     if( FindOption(code, key) != -1 ){
         ret = RET_EXISTING_OPTION;
     }
@@ -45,8 +46,8 @@ ReternCode ClientMenu::AddOption(const char* message, ClientMenuOption code, cha
     return ret;
 }
 
-ReternCode ClientMenu::RemoveOption(const char* message, ClientMenuOption code, char key){
-    ReternCode ret = RET_OK;
+ReturnCode ClientMenu::RemoveOption(const char* message, ClientMenuOption code, char key){
+    ReturnCode ret = RET_OK;
     int i = FindOption(code, key);
     if ( i == -1 ){
         ret = RET_UNEXISTING_OPTION;
@@ -65,4 +66,38 @@ Option ClientMenu::GetOption(unsigned i) const{
 
 size_t ClientMenu::GetNumberOfOptions() const{
     return m_options.size();
+}
+
+ReturnCode ClientMenu::Initialize(){
+	ReturnCode retVal = RET_OK;
+	char options_char[][2] = {
+        {"Choose a user", "c"},
+        ("Print available users", "p")
+        ("Send a message", "s")};
+	ClientMenuOption options_menu[] = {
+        ClientOption_ChooseUser,
+        ClientOption_PrintUsers,
+        ClientOption_SendMessage
+	};
+	for(unsigned i = 0; i < sizeof(options); i++){
+        ret = AddOption(options[i][0], options_menu[i], options[i][1][0]);
+        if( ret != RET_OK ){
+            break;
+        }
+	}
+	return ret;
+}
+
+ClientMenuOption ClientMenu::GetUserChoice() const {
+	ClientMenuOption retVal = ClientOption_InvalidOption;
+	char key = HAL_US_GetChar();
+	while( retVal == ClientOption_InvalidOption ) {
+        for( auto i = m_options.begin(); i != m_options.end(); i++){
+            if( i.m_key == key ){
+                retVal = i.m_code;
+                break;
+            }
+        }
+	}
+	return retVal;
 }
