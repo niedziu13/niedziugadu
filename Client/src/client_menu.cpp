@@ -89,15 +89,18 @@ ReturnCode ClientMenu::Initialize(){
 }
 
 ClientMenuOption ClientMenu::GetUserChoice() const {
-	ClientMenuOption retVal = ClientOption_InvalidOption;
-	char key = HAL_US_GetChar();
+    char key;
+    ClientMenuOption retVal = ClientOption_InvalidOption;
 	while( retVal == ClientOption_InvalidOption ) {
+		LOG_I(*this); // Print menu
+		key = HAL_UI_GetChar();
         for( auto i = m_options.begin(); i != m_options.end(); i++){
             if( i.m_key == key ){
                 retVal = i.m_code;
                 break;
             }
         }
+        LOG_I("An invalid option. Try again");
 	}
 	return retVal;
 }

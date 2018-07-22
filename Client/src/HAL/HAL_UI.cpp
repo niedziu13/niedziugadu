@@ -5,3 +5,6 @@
  *      Author: HP
  */
 
+char HAL_UI_GetChar(){
+    return cin.get();
+}

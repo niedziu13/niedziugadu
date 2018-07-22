@@ -10,7 +10,8 @@
 
 #include <iostream>
 
-char HAL_UI_GetChar(){
-    return cin.get();
-}
+#define LOG_I(x) (std::cout << ( x ) )
+
+char HAL_UI_GetChar();
+
 #endif /* HAL_UI_HPP_ */
