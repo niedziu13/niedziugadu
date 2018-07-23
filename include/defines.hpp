@@ -10,6 +10,8 @@
 
 #include <assert.h>
 
+#define SERVER_PORT 44211
+
 enum ReturnCode {
     RET_INVALID,
     RET_OK,
@@ -17,6 +19,8 @@ enum ReturnCode {
     RET_EXISTING_OPTION,
     RET_INVALID_OPTION_FOUND,
     RET_INVALID_NUMBER_OR_ARGS,
+    RET_SOCKET_ERROR,
+    RET_CONNECTION_ERROR,
     RET_INVALID_ADDRESS
 };
 

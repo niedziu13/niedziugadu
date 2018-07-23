@@ -11,6 +11,7 @@
 #include <iostream>
 
 #define LOG_I(x) (std::cout << ( x ) )
+#define LOG_E(x) (std::cerr <<  x  )
 
 char HAL_UI_GetChar();
 

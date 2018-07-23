@@ -7,6 +7,7 @@
 
 #include "client_menu.hpp"
 #include "HAL_UI.hpp"
+#include <assert.h>
 
 std::ostream& operator<<(std::ostream& out, const ClientMenu& menu) {
     out<<"Following options are possible: " << std::endl;
@@ -21,6 +22,28 @@ Option::Option(const char* message, ClientMenuOption code, char key):
     m_code( code ),
     m_key( key )
 {
+}
+
+ClientMenu::ClientMenu(){
+    ReturnCode ret;
+    const char* options_char[][2] = {
+        {"Choose a user", "c"},
+        {"Print friends with status", "p"},
+        {"Exit", "e"},
+        {"Send a message", "s"}
+    };
+    ClientMenuOption options_menu[] = {
+        ClientOption_ChooseUser,
+        ClientOption_PrintFriends,
+        ClientOption_Exit,
+        ClientOption_SendMessage
+    };
+    for(unsigned i = 0; i < sizeof(options_menu) / sizeof(options_menu[0]); i++){
+        ret = AddOption(options_char[i][0], options_menu[i], options_char[i][1][0]);
+        if( ret != RET_OK ){
+            assert(false);
+        }
+    }
 }
 
 int ClientMenu::FindOption(ClientMenuOption code, char key){
@@ -68,26 +91,6 @@ size_t ClientMenu::GetNumberOfOptions() const{
     return m_options.size();
 }
 
-ReturnCode ClientMenu::Initialize(){
-	ReturnCode retVal = RET_OK;
-	char options_char[][2] = {
-        {"Choose a user", "c"},
-        ("Print available users", "p")
-        ("Send a message", "s")};
-	ClientMenuOption options_menu[] = {
-        ClientOption_ChooseUser,
-        ClientOption_PrintUsers,
-        ClientOption_SendMessage
-	};
-	for(unsigned i = 0; i < sizeof(options); i++){
-        ret = AddOption(options[i][0], options_menu[i], options[i][1][0]);
-        if( ret != RET_OK ){
-            break;
-        }
-	}
-	return ret;
-}
-
 ClientMenuOption ClientMenu::GetUserChoice() const {
     char key;
     ClientMenuOption retVal = ClientOption_InvalidOption;
@@ -95,12 +98,14 @@ ClientMenuOption ClientMenu::GetUserChoice() const {
 		LOG_I(*this); // Print menu
 		key = HAL_UI_GetChar();
         for( auto i = m_options.begin(); i != m_options.end(); i++){
-            if( i.m_key == key ){
-                retVal = i.m_code;
+            if( i->m_key == key ){
+                retVal = i->m_code;
                 break;
             }
         }
-        LOG_I("An invalid option. Try again");
+        if ( retVal == ClientOption_InvalidOption ) {
+            LOG_I("An invalid option. Try again.\n");
+        }
 	}
 	return retVal;
 }

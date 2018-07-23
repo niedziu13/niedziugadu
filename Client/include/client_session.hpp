@@ -8,13 +8,18 @@
 #ifndef CLIENT_SESSION_HPP_
 #define CLIENT_SESSION_HPP_
 
-#include <sys.socket.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include "defines.hpp"
+
 
 class ClientSession {
-    sockaddr_in m_serverAddress;
+    struct sockaddr_in m_serverAddress;
+    int m_serverSocket;
 public:
     ClientSession();
-    int UpdateAddress( char* address );
+    int UpdateAddress( const char* address );
+    ReturnCode ConnectToServer();
 };
 
 #endif /* CLIENT_SESSION_HPP_ */

@@ -5,6 +5,12 @@
  *      Author: HP
  */
 
+#include "HAL_UI.hpp"
+
 char HAL_UI_GetChar(){
-    return cin.get();
+    char key;
+    std::cin >> key;
+    std::cin.clear();
+    std::cin.ignore( 1000, '\n' );
+    return key;
 }

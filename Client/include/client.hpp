@@ -10,7 +10,8 @@
 
 #include <assert.h>
 #include <iostream>
-#include "defines.h"
+#include "defines.hpp"
+#include "client_session.hpp"
 
 /**
  * 1. A program name
@@ -18,6 +19,6 @@
  */
 #define NUMBER_OF_ARGS 2
 
-ReturnCode ParseArgs(int argc, char** argv);
+ReturnCode ParseArgs(int argc, char** argv, ClientSession& session);
 
 #endif /* CLIENT_HPP_ */

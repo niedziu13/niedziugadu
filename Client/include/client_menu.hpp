@@ -15,7 +15,7 @@
 enum ClientMenuOption{
     ClientOption_InvalidOption,
     ClientOption_Exit,
-    ClientOption_PrintUsers,
+    ClientOption_PrintFriends,
     ClientOption_ChooseUser,
     ClientOption_SendMessage
 };
@@ -34,11 +34,11 @@ private:
     std::vector<Option> m_options;
     int FindOption(ClientMenuOption code, char key);
 public:
+    ClientMenu();
     ReturnCode AddOption(const char* message, ClientMenuOption code, char key);
     ReturnCode RemoveOption(const char* message, ClientMenuOption code, char key);
     Option GetOption(unsigned i) const;
     size_t GetNumberOfOptions() const;
-    ReturnCode Initialize();
     ClientMenuOption GetUserChoice() const;
 };
 
