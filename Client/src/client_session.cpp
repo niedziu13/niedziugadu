@@ -7,12 +7,12 @@
 
 #include "client_session.hpp"
 #include "HAL_UI.hpp"
+#include "message.hpp"
 #include <string.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
 
 ClientSession::ClientSession(){
+    m_status = ClientSessionStatus_Disconnected;
     memset( &m_serverAddress, 0, sizeof( m_serverAddress ) );
 }
 
@@ -38,4 +38,15 @@ ReturnCode ClientSession::ConnectToServer() {
         }
     }
     return retVal;
+}
+
+ReturnCode ClientSession::Login() {
+    LoggingPayload log_payload;
+    Message log_msg;
+    memset( log_payload.passHASH, 1, HASH_SIZE);
+    HAL_UI_GetLogin( log_payload.login );
+    log_msg.m_header.m_len = sizeof( LoggingPayload );
+    log_msg.m_header.m_type = MSGTYPE_LOGGING;
+
+    return RET_OK;
 }

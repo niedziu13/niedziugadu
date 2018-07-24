@@ -17,6 +17,7 @@ enum ClientMenuOption{
     ClientOption_Exit,
     ClientOption_PrintFriends,
     ClientOption_ChooseUser,
+    ClientOption_Login,
     ClientOption_SendMessage
 };
 

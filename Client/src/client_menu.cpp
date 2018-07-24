@@ -30,12 +30,14 @@ ClientMenu::ClientMenu(){
         {"Choose a user", "c"},
         {"Print friends with status", "p"},
         {"Exit", "e"},
+        {"Login", "l"},
         {"Send a message", "s"}
     };
     ClientMenuOption options_menu[] = {
         ClientOption_ChooseUser,
         ClientOption_PrintFriends,
         ClientOption_Exit,
+        ClientOption_Login,
         ClientOption_SendMessage
     };
     for(unsigned i = 0; i < sizeof(options_menu) / sizeof(options_menu[0]); i++){

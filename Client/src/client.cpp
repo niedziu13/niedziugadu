@@ -16,6 +16,9 @@ int main(int argc, char** argv) {
             switch( menu.GetUserChoice() ) {
             case ClientOption_Exit:
                 break;
+            case ClientOption_Login:
+                session.Login();
+                break;
             case ClientOption_ChooseUser:
                 break;
             case ClientOption_PrintFriends:
@@ -33,9 +36,9 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-ReturnCode ParseArgs(int argc, char** argv, ClientSession& session){
+ReturnCode ParseArgs(int argc, char** argv, ClientSession& session) {
     ReturnCode retVal = RET_OK;
-    if( argc != NUMBER_OF_ARGS ){
+    if ( argc != NUMBER_OF_ARGS ){
         retVal = RET_INVALID_NUMBER_OR_ARGS;
     } else if ( session.UpdateAddress( argv[1] ) == 0 ) {
         retVal = RET_INVALID_ADDRESS;
