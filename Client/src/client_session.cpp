@@ -6,14 +6,23 @@
  */
 
 #include "client_session.hpp"
+#include "client_communication.hpp"
 #include "HAL_UI.hpp"
+#include "HAL_memory.hpp"
 #include "message.hpp"
 #include <string.h>
 #include <netinet/in.h>
 
+
 ClientSession::ClientSession(){
     m_status = ClientSessionStatus_Disconnected;
     memset( &m_serverAddress, 0, sizeof( m_serverAddress ) );
+    memset( m_login, 0, sizeof( m_login ) );
+    pthread_mutex_init( &m_mutex, NULL );
+}
+
+ClientSession::~ClientSession(){
+    pthread_mutex_destroy( &m_mutex );
 }
 
 int ClientSession::UpdateAddress( const char* addr){
@@ -35,18 +44,46 @@ ReturnCode ClientSession::ConnectToServer() {
             retVal = RET_CONNECTION_ERROR;
         } else {
             LOG_I( "Connected to the server\n" );
+            m_status = ClientSessionStatus_Connceted;
         }
     }
     return retVal;
 }
 
 ReturnCode ClientSession::Login() {
+    ReturnCode retVal = RET_OK;
     LoggingPayload log_payload;
     Message log_msg;
-    memset( log_payload.passHASH, 1, HASH_SIZE);
-    HAL_UI_GetLogin( log_payload.login );
-    log_msg.m_header.m_len = sizeof( LoggingPayload );
-    log_msg.m_header.m_type = MSGTYPE_LOGGING;
 
-    return RET_OK;
+    if ( m_status == ClientSessionStatus_Disconnected ) {
+        LOG_E( "You are not connected to the server. Unable to login.\n" );
+        retVal = RET_SESSION_STATUS_ERROR;
+    } else if ( HAL_UI_GetLogin( log_payload.m_login ) != RET_OK ) {
+        retVal = RET_INVALID_LOGIN;
+    } else {
+        memset( log_payload.m_passHASH, 1, HASH_SIZE);
+        SavePayload( log_msg, log_payload );
+        log_msg.m_header.m_len = static_cast<uint16_t>( sizeof( LoggingPayload ) );
+        log_msg.m_header.m_type = MSGTYPE_LOGGING;
+        retVal = SendMessage( log_msg, *this );
+        if ( retVal != RET_OK ) {
+            LOG_E( "Unable to send logging message.\n" );
+        } else {
+            strcpy( m_login, log_payload.m_login );
+            m_status = ClientSessionStatus_LogingPending;
+        }
+    }
+    return retVal;
+}
+
+int ClientSession::Lock( const timespec* time ) {
+    return pthread_mutex_timedlock( &m_mutex, time );
+}
+
+int ClientSession::Unlock() {
+    return pthread_mutex_unlock( &m_mutex );
+}
+
+int ClientSession::GetSocket() const {
+    return m_serverSocket;
 }

@@ -111,3 +111,4 @@ ClientMenuOption ClientMenu::GetUserChoice() const {
 	}
 	return retVal;
 }
+
