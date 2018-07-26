@@ -12,7 +12,7 @@
 #include "message.hpp"
 #include <string.h>
 #include <netinet/in.h>
-
+#include <unistd.h>
 
 ClientSession::ClientSession(){
     m_status = ClientSessionStatus_Disconnected;
@@ -23,6 +23,7 @@ ClientSession::ClientSession(){
 
 ClientSession::~ClientSession(){
     pthread_mutex_destroy( &m_mutex );
+    close( m_serverSocket );
 }
 
 int ClientSession::UpdateAddress( const char* addr){

@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-#define LOG_I(x) ( std::cout << ( x ) )
-#define LOG_E(x) ( std::cerr << ( x ) )
+#define LOG_I(x) ( std::cout << x )
+#define LOG_E(x) ( std::cerr << x )
 
 #endif /* SERVER_LOGGER_HPP_ */

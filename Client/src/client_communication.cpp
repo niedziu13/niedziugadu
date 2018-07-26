@@ -35,7 +35,7 @@ ReturnCode SendMessage( const Message& msg, ClientSession& session) {
 
     // Mutex blocked
     if ( session.Lock( &waitingTime ) == 0 ) {
-        size_t res;
+        int res;
         res = write( session.GetSocket(), buf, msg_len );
         if ( res != msg_len ) {
             LOG_E( "Sending error." );
@@ -50,6 +50,8 @@ ReturnCode SendMessage( const Message& msg, ClientSession& session) {
         LOG_E( "Unable to lock mutex during sending " );
         retVal = RET_MUTEX_ERROR;
     }
+    delete buf;
+
     return retVal;
 }
 

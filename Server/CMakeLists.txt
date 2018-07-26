@@ -12,11 +12,18 @@ set(SERVER_HEADERS
 	${SERVER_PATH}/include/server_session.hpp
 	${SERVER_PATH}/include/server.hpp
 	${SERVER_PATH}/include/server_logger.hpp
+	${SERVER_PATH}/include/server_user.hpp
+	${SERVER_PATH}/include/server_memory.hpp
+	${SERVER_PATH}/include/server_user_session.hpp
+	${SERVER_PATH}/include/server_communication.hpp
 	)
 
 set(SERVER_SOURCES 
     ${SERVER_PATH}/src/server.cpp
     ${SERVER_PATH}/src/server_session.cpp
+    ${SERVER_PATH}/src/server_user.cpp
+	${SERVER_PATH}/src/server_user_session.cpp
+	${SERVER_PATH}/src/server_communication.cpp
     )
 
 add_executable(${SERVER_TARGET} ${SERVER_SOURCES} ${SERVER_HEADERS})

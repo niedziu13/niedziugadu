@@ -29,14 +29,13 @@ struct MessageHeader {
     msgType_t m_pad; // padding
 };
 
+
 /*
   Depending on arch the structure in memory can look different.
   Message in memory should look like (but the size has to be 4 bytes):
   BITS  01234567012345670123456701234567012...
         |m_len(LE)     |m_type |m_pad  | payload ...
-
  */
-
 struct Message {
     MessageHeader m_header;
     std::vector<uint8_t> m_payload;
@@ -48,7 +47,6 @@ struct Message {
   BYES  0123456701234567012345670123456701234567012345670123456701234567
         |m_login                       | m_passHASH                    |
 */
-
 struct LoggingPayload {
     char m_login[LOGIN_MAX_SIZE];
     uint8_t m_passHASH[HASH_SIZE];

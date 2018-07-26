@@ -17,12 +17,12 @@ set(CLIENT_HEADERS
 	${PROJECT_PATH}/include/defines.hpp)
 
 set(CLIENT_SOURCES 
+    ${CLIENT_PATH}/src/client.cpp
     ${CLIENT_PATH}/src/client_menu.cpp
-    ${CLIENT_PATH}/src/HAL/HAL_memory.cpp
     ${CLIENT_PATH}/src/client_session.cpp
     ${CLIENT_PATH}/src/client_communication.cpp
     ${CLIENT_PATH}/src/HAL/HAL_UI.cpp
-    ${CLIENT_PATH}/src/client.cpp
+    ${CLIENT_PATH}/src/HAL/HAL_memory.cpp
     )
 
 add_executable(${CLIENT_TARGET} ${CLIENT_SOURCES} ${CLIENT_HEADERS})
