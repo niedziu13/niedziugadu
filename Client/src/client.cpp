@@ -13,23 +13,25 @@ int main(int argc, char** argv) {
     } else {
         //Connect to server
         if (  session.ConnectToServer() == RET_OK ) {
-            switch( menu.GetUserChoice() ) {
-            case ClientOption_Exit:
-                break;
-            case ClientOption_Login:
-                session.Login();
-                break;
-            case ClientOption_ChooseUser:
-                break;
-            case ClientOption_PrintFriends:
-                break;
-            case ClientOption_SendMessage:
-                break;
-            case ClientOption_InvalidOption:
-                break;
-            default:
-                assert( false );
-                break;
+            while(1) {
+                switch( menu.GetUserChoice() ) {
+                case ClientOption_Exit:
+                    break;
+                case ClientOption_Login:
+                    session.Login();
+                    break;
+                case ClientOption_ChooseUser:
+                    break;
+                case ClientOption_PrintFriends:
+                    break;
+                case ClientOption_SendMessage:
+                    break;
+                case ClientOption_InvalidOption:
+                    break;
+                default:
+                    assert( false );
+                    break;
+                }
             }
         }
     }

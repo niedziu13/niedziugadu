@@ -19,6 +19,7 @@ class ServerSession {
     int m_socket;
 public:
     ServerSession();
+    ~ServerSession();
     ReturnCode SetupAndListen();
     int Accept() const;
 };

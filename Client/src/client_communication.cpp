@@ -19,7 +19,7 @@
 ReturnCode SendMessage( const Message& msg, ClientSession& session) {
     ReturnCode retVal = RET_OK;
     timespec waitingTime;
-    size_t msg_len = sizeof( MessageHeader ) + msg.m_header.m_len;
+    int msg_len = sizeof( MessageHeader ) + msg.m_header.m_len;
     uint8_t *buf = new uint8_t[ msg_len ];
     // Prepare buffor
     // Msg header

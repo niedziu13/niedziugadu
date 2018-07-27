@@ -12,6 +12,11 @@
 #include "message.hpp"
 #include "server_user_session.hpp"
 
+#define WAITING_SEND_TIME_S 5
+#define WAITING_SEND_TIME_NS 0
+
 ReturnCode ReciveMessage( Message& msg, UserSession& session );
+
+ReturnCode SendMessage( const Message& msg, UserSession& session);
 
 #endif /* SERVER_COMMUNICATION_HPP_ */

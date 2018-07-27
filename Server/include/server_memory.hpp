@@ -10,11 +10,16 @@
 
 #include <string>
 
-template <class type>
-type GetLE(uint8_t* value) {
-    type tmp;
-    memcpy( &tmp, value, sizeof( type ) );
+template <class ValueType>
+ValueType GetLE(uint8_t* value) {
+    ValueType tmp;
+    memcpy( &tmp, value, sizeof( ValueType ) );
     return tmp;
+}
+
+template <class ValueType>
+void SetLE(void* dst, ValueType val) {
+    memcpy( dst, &val, sizeof( ValueType ) );
 }
 
 

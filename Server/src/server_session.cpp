@@ -9,9 +9,15 @@
 #include "server_logger.hpp"
 #include <netinet/in.h>
 #include <string.h>
+#include <unistd.h>
 
 ServerSession::ServerSession() {
     memset( &m_serverAddress, 0, sizeof( m_serverAddress ) );
+}
+
+ServerSession::~ServerSession() {
+    std::cout << "Server session destr" << std::endl;
+    close( m_socket );
 }
 
 ReturnCode ServerSession::SetupAndListen() {
