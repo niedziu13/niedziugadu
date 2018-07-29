@@ -16,6 +16,7 @@
 #include "defines.hpp"
 
 ReturnCode SendMessage( const Message& msg, ClientSession& session);
+ReturnCode ReciveMessage( Message& msg, ClientSession& session );
 
 void SavePayload( Message& msg, const LoggingPayload& payload );
 

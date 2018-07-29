@@ -16,4 +16,11 @@ void SetLE(void* dst, ValueType val) {
     memcpy( dst, &val, sizeof( ValueType ) );
 }
 
+template <class ValueType>
+ValueType GetLE(uint8_t* value) {
+    ValueType tmp;
+    memcpy( &tmp, value, sizeof( ValueType ) );
+    return tmp;
+}
+
 #endif /* HAL_MEMORY_HPP_ */
