@@ -18,7 +18,9 @@ enum ClientMenuOption{
     ClientOption_PrintFriends,
     ClientOption_ChooseUser,
     ClientOption_Login,
-    ClientOption_SendMessage
+    ClientOption_SendMessage,
+    ClientOption_Disconnect,
+    ClientOption_Connect
 };
 
 class Option {

@@ -11,6 +11,7 @@ set(CLIENT_HEADERS
 	${CLIENT_PATH}/include/client_menu.hpp
 	${CLIENT_PATH}/include/client_session.hpp
 	${CLIENT_PATH}/include/client_communication.hpp
+	${CLIENT_PATH}/include/client_commands.hpp
 	${CLIENT_PATH}/include/client.hpp
 	${CLIENT_PATH}/include/HAL/HAL_UI.hpp
 	${CLIENT_PATH}/include/HAL/HAL_memory.hpp
@@ -21,6 +22,7 @@ set(CLIENT_SOURCES
     ${CLIENT_PATH}/src/client_menu.cpp
     ${CLIENT_PATH}/src/client_session.cpp
     ${CLIENT_PATH}/src/client_communication.cpp
+    ${CLIENT_PATH}/src/client_commands.cpp
     ${CLIENT_PATH}/src/HAL/HAL_UI.cpp
     ${CLIENT_PATH}/src/HAL/HAL_memory.cpp
     )

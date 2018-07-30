@@ -16,8 +16,12 @@
 typedef uint8_t msgType_t;
 typedef uint16_t msgLen_t;
 
-#define MSGTYPE_TEXT (msgType_t) 0x01
-#define MSGTYPE_LOGGING (msgType_t) 0x02
+#define MSGTYPE_TEXT ( (msgType_t) 0x01 )
+#define MSGTYPE_LOGGING_REQ ( (msgType_t) 0x02 )
+#define MSGTYPE_LOGGING_ANS ( (msgType_t) 0x03 )
+
+#define ANS_OK ( (msgType_t) 0x00 )
+
 #define LOGIN_MAX_SIZE 32U // Including \0 in the string
 #define HASH_SIZE 32U
 
@@ -43,14 +47,36 @@ struct Message {
 
 
 /*
-  Logging payload in memory
+  Logging request payload in memory
   BYES  0123456701234567012345670123456701234567012345670123456701234567
         |m_login                       | m_passHASH                    |
 */
-struct LoggingPayload {
+struct LoggingReqPayload {
     char m_login[LOGIN_MAX_SIZE];
     uint8_t m_passHASH[HASH_SIZE];
-}; // __attribute__((packed));
+};
 
+/*
+  Logging answer payload in memory
+  BYES  0123456701234567012345670123456701234567012345670123456701234567
+        |m_login                       | m_anwser                      |
+*/
+struct LoggingAnsPayload {
+    char m_login[LOGIN_MAX_SIZE];
+    uint8_t m_anwser[HASH_SIZE]; // Only the first byte matters
+};
+
+/*
+  Text message payload in memory
+  BYES  0123456701234567012345670123456701234567012345670123456701234567
+        |m_loginSrc                     | m_loginDst                   |
+        |text ...
+
+*/
+struct TextPayload {
+    char m_loginSrc[LOGIN_MAX_SIZE];
+    char m_loginDst[LOGIN_MAX_SIZE];
+    std::vector<char> m_text;
+};
 
 #endif /* MESSAGE_HPP_ */

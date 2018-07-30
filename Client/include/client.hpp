@@ -21,4 +21,6 @@
 
 ReturnCode ParseArgs(int argc, char** argv, ClientSession& session);
 
+void* HandleRecivingMessages(void *arg);
+
 #endif /* CLIENT_HPP_ */

@@ -9,6 +9,7 @@
 #include "server_logger.hpp"
 #include <string.h>
 #include <unistd.h>
+#include <sys/socket.h>
 
 UserSession::UserSession()
 {
@@ -140,6 +141,7 @@ ReturnCode UserSession::Close() {
         while( m_ongoingWrites != 0 ) {
             pthread_cond_wait( &m_cond, &m_sessionMutex );
         }
+        shutdown( m_sock, SHUT_RDWR );
         close( m_sock );
         m_sessionStatus = UserSessionStatus_Inactive;
         if ( pthread_mutex_unlock( &m_sessionMutex ) != 0 ) {

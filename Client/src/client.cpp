@@ -1,29 +1,9 @@
 #include <client_menu.hpp>
 #include <client_communication.hpp>
+#include "client_commands.hpp"
 #include <HAL_UI.hpp>
 #include <client.hpp>
 #include <pthread.h>
-
-void* HandleRecivingMessages(void *arg) {
-	ClientSession* session = (ClientSession*) arg;
-    Message msg;
-
-    if ( ReciveMessage( msg, *session ) == RET_OK ) {
-        switch ( msg.m_header.m_type ) {
-        case MSGTYPE_LOGGING:
-        break;
-        default:
-        break;
-        }
-
-    } else {
-        std::cout<< "End of connection ?\n";
-//        session->Close();
-//        break;
-    }
-
-	return NULL;
-}
 
 int main(int argc, char** argv) {
     std::cout << "Siema tutaj Client" << std::endl;
@@ -35,9 +15,8 @@ int main(int argc, char** argv) {
         LOG_E( "Invalid args. ERRNO: " << retCode << "\n" );
     } else {
         //Connect to server
-        if (  session.ConnectToServer() == RET_OK ) {
+        if ( session.Connect() == RET_OK ) {
             pthread_t thread;
-            LOG_I( "A new user connected. \n" );
             pthread_create(&thread, NULL, HandleRecivingMessages, (void*)&session);
 
             while(1) {
@@ -52,8 +31,18 @@ int main(int argc, char** argv) {
                 case ClientOption_PrintFriends:
                     break;
                 case ClientOption_SendMessage:
+                    TextSend( session );
                     break;
                 case ClientOption_InvalidOption:
+                    break;
+                case ClientOption_Connect:
+                    if ( session.Connect() == RET_OK ) {
+                        pthread_t thread;
+                        pthread_create(&thread, NULL, HandleRecivingMessages, (void*)&session);
+                    }
+                    break;
+                case ClientOption_Disconnect:
+                    session.Disconnect();
                     break;
                 default:
                     assert( false );
@@ -73,4 +62,28 @@ ReturnCode ParseArgs(int argc, char** argv, ClientSession& session) {
         retVal = RET_INVALID_ADDRESS;
     }
     return retVal;
+}
+
+void* HandleRecivingMessages(void *arg) {
+	ClientSession* session = (ClientSession*) arg;
+    Message msg;
+
+    if ( ReciveMessage( msg, *session ) == RET_OK ) {
+        switch ( msg.m_header.m_type ) {
+        case MSGTYPE_LOGGING_ANS:
+            LoggingAns( *session, msg );
+            break;
+        case MSGTYPE_TEXT:
+            TextRec( *session, msg );
+            break;
+        default:
+        break;
+        }
+
+    } else {
+        std::cout<< "End of connection.\n";
+        session->Close();
+    }
+
+	return NULL;
 }

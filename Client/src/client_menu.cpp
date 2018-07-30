@@ -27,18 +27,22 @@ Option::Option(const char* message, ClientMenuOption code, char key):
 ClientMenu::ClientMenu(){
     ReturnCode ret;
     const char* options_char[][2] = {
-        {"Choose a user", "c"},
+        {"Choose a user", "u"},
         {"Print friends with status", "p"},
         {"Exit", "e"},
         {"Login", "l"},
-        {"Send a message", "s"}
+        {"Send a message", "s"},
+        {"Disconnect", "d"},
+        {"Connect to the server", "c"}
     };
     ClientMenuOption options_menu[] = {
         ClientOption_ChooseUser,
         ClientOption_PrintFriends,
         ClientOption_Exit,
         ClientOption_Login,
-        ClientOption_SendMessage
+        ClientOption_SendMessage,
+        ClientOption_Disconnect,
+        ClientOption_Connect
     };
     for(unsigned i = 0; i < sizeof(options_menu) / sizeof(options_menu[0]); i++){
         ret = AddOption(options_char[i][0], options_menu[i], options_char[i][1][0]);

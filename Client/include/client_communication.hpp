@@ -18,6 +18,9 @@
 ReturnCode SendMessage( const Message& msg, ClientSession& session);
 ReturnCode ReciveMessage( Message& msg, ClientSession& session );
 
-void SavePayload( Message& msg, const LoggingPayload& payload );
+void SavePayload( Message& msg, const LoggingReqPayload& payload );
+void SavePayload( Message& msg, const TextPayload& payload );
+void LoadPayload( const Message& msg, LoggingAnsPayload& payload );
+void LoadPayload( const Message& msg, TextPayload& payload );
 
 #endif /* CLIENT_COMMUNICATION_HPP_ */

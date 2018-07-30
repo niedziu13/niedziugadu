@@ -14,6 +14,7 @@
 #include "HAL_memory.hpp"
 #include "HAL_UI.hpp"
 #include <unistd.h>
+#include <assert.h>
 
 // Function prepare the message according to the frame definition in message.hpp
 ReturnCode SendMessage( const Message& msg, ClientSession& session) {
@@ -34,7 +35,7 @@ ReturnCode SendMessage( const Message& msg, ClientSession& session) {
     waitingTime.tv_nsec = WAITING_SEND_TIME_NS;
 
     // Mutex blocked
-    if ( session.Lock( &waitingTime ) == 0 ) {
+    if ( session.LockSend( &waitingTime ) == 0 ) {
         int res;
         res = write( session.GetSocket(), buf, msg_len );
         if ( res != msg_len ) {
@@ -42,7 +43,7 @@ ReturnCode SendMessage( const Message& msg, ClientSession& session) {
             retVal = RET_COMMUNICATION_ERROR;
         }
 
-        if ( session.Unlock() != 0 ) {
+        if ( session.UnlockSend() != 0 ) {
             LOG_E( "Unlocking mutex error." );
             retVal = RET_MUTEX_ERROR;
         }
@@ -67,7 +68,7 @@ ReturnCode ReciveMessage( Message& msg, ClientSession& session ) {
         LOG_E( "Connection error. \n" );
         retVal = RET_COMMUNICATION_ERROR;
     } else if ( res == 0 ) {
-        LOG_E( "Connection closed. \n" );
+        LOG_E( "Read = 0. Connection closed. \n" );
         retVal = RET_COMMUNICATION_ERROR;
     } else {
         if ( static_cast<uint16_t>( res ) != msg_header_len ) {
@@ -101,8 +102,31 @@ ReturnCode ReciveMessage( Message& msg, ClientSession& session ) {
     return retVal;
 }
 
-void SavePayload( Message& msg, const LoggingPayload& payload ) {
-    msg.m_payload.resize( sizeof( LoggingPayload ) );
+void SavePayload( Message& msg, const LoggingReqPayload& payload ) {
+    msg.m_payload.resize( sizeof( LoggingReqPayload ) );
     memcpy( msg.m_payload.data(), payload.m_login, sizeof( payload.m_login ) );
     memcpy( msg.m_payload.data() + sizeof( payload.m_login ), payload.m_passHASH, sizeof( payload.m_passHASH ) );
+}
+
+void SavePayload( Message& msg, const TextPayload& payload ) {
+    int textSize = msg.m_header.m_len - sizeof( payload.m_loginSrc ) - sizeof( payload.m_loginDst );
+    assert( textSize >= 1 );
+    msg.m_payload.resize( msg.m_header.m_len );
+    memcpy( msg.m_payload.data(), payload.m_loginSrc, sizeof( payload.m_loginSrc ) );
+    memcpy( msg.m_payload.data() + sizeof( payload.m_loginSrc ), payload.m_loginDst, sizeof( payload.m_loginDst ) );
+    memcpy( msg.m_payload.data() + sizeof( payload.m_loginSrc ) + sizeof( payload.m_loginDst ), payload.m_text.data(), textSize );
+}
+
+void LoadPayload( const Message& msg, LoggingAnsPayload& payload ) {
+    memcpy( payload.m_login, msg.m_payload.data(), sizeof( payload.m_login ) );
+    memcpy( payload.m_anwser , msg.m_payload.data() + sizeof( payload.m_login ), sizeof( payload.m_anwser) );
+}
+
+void LoadPayload( const Message& msg, TextPayload& payload ) {
+    int textSize = msg.m_header.m_len - sizeof( payload.m_loginSrc ) - sizeof( payload.m_loginDst );
+    assert( textSize >= 1 );
+    memcpy( payload.m_loginSrc, msg.m_payload.data(), sizeof( payload.m_loginSrc ) );
+    memcpy( payload.m_loginDst, msg.m_payload.data() + sizeof( payload.m_loginSrc ), sizeof( payload.m_loginDst ) );
+    payload.m_text.resize( textSize );
+    memcpy( payload.m_text.data() , msg.m_payload.data(), textSize );
 }

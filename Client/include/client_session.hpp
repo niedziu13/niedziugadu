@@ -26,17 +26,25 @@ class ClientSession {
     int m_serverSocket;
     ClientSessionStatus m_status;
     char m_login[LOGIN_MAX_SIZE];
-    pthread_mutex_t m_mutex;
+    pthread_mutex_t m_sendMutex; // Mutex of send operation
+    pthread_mutex_t m_sessionMutex; // Mutex of session status
 public:
     ClientSession();
     ~ClientSession();
     int UpdateAddress( const char* address );
     int GetSocket() const;
-    ReturnCode ConnectToServer();
+    ReturnCode Connect();
+    ReturnCode Disconnect();
     ReturnCode Login();
-    int Lock();
-    int Lock( const timespec* time );
-    int Unlock();
+    ReturnCode Close();
+    int LockSend();
+    int LockSend( const timespec* time );
+    int UnlockSend();
+    int LockSession();
+    int UnlockSession();
+    const char* GetLogin() const;
+    ClientSessionStatus GetStatus() const;
+    void SetStatus( ClientSessionStatus status );
 };
 
 #endif /* CLIENT_SESSION_HPP_ */
