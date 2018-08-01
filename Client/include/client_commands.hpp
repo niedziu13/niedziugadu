@@ -14,6 +14,9 @@
 #endif /* CLIENT_COMMANDS_HPP_ */
 
 ReturnCode LoggingAns( ClientSession& session, const Message& msg );
-ReturnCode TextRec( ClientSession& session, const Message& msg );
-ReturnCode TextSend( ClientSession& session );
 
+ReturnCode TextMsgRec( ClientSession& session, const Message& msg );
+
+ReturnCode TextMsgSend( ClientSession& session );
+
+ReturnCode TextCtrlRec( const Message& msg );

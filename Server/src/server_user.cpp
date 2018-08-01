@@ -7,6 +7,7 @@
 
 #include "server_user.hpp"
 #include "string.h"
+#include "message.hpp"
 
 UserDataBase::UserDataBase() {
     User usr;
@@ -22,11 +23,11 @@ UserDataBase& UserDataBase::Instance() {
     return base;
 }
 
-ReturnCode UserDataBase::VerifyUser( const User& usr ) {
+ReturnCode UserDataBase::VerifyUser( const LoggingReqPayload& payload ) {
     ReturnCode retVal = RET_INVALID_CREDENTIALS;
     for( auto i = m_base.begin(); i != m_base.end(); ++i) {
-        if( strcmp( i->m_login, usr.m_login ) == 0 ) {
-            if( memcmp( i->m_passwordHASH, usr.m_passwordHASH, HASH_SIZE ) == 0 ) {
+        if( strcmp( i->m_login, payload.m_login ) == 0 ) {
+            if( memcmp( i->m_passwordHASH, payload.m_passHASH, HASH_SIZE ) == 0 ) {
                 retVal = RET_OK;
             }
             break;

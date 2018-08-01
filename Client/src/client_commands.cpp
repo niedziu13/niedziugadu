@@ -24,7 +24,7 @@ ReturnCode LoggingAns( ClientSession& session, const Message& msg ) {
         } else if ( strcmp( session.GetLogin(), payload.m_login ) != 0 ){
             LOG_E( "Logging answer for different user.\n" );
             retVal = RET_SESSION_STATUS_ERROR;
-        } else if ( payload.m_anwser[0] != ANS_OK ) {
+        } else if ( payload.m_anwser[0] != LOGREQ_RET_OK ) {
             LOG_E( "Unable to login as: " << payload.m_login << "\n" );
             retVal = RET_INVALID_CREDENTIALS;
         } else {
@@ -38,10 +38,11 @@ ReturnCode LoggingAns( ClientSession& session, const Message& msg ) {
     return retVal;
 }
 
-ReturnCode TextRec( ClientSession& session, const Message& msg ) {
+ReturnCode TextMsgRec( ClientSession& session, const Message& msg ) {
     ReturnCode retVal = RET_OK;
-    TextPayload payload;
+    TextMsgPayload payload;
 
+    // TODO: Not coping all text to a new memory
     LoadPayload( msg, payload );
     if ( strcmp( payload.m_loginDst, session.GetLogin() ) != 0 ) {
         LOG_E( "Received a message to somebody else\n" );
@@ -53,7 +54,7 @@ ReturnCode TextRec( ClientSession& session, const Message& msg ) {
     return retVal;
 }
 
-ReturnCode TextSend( ClientSession& session ) {
+ReturnCode TextMsgSend( ClientSession& session ) {
     ReturnCode retVal = RET_OK;
 
     if ( session.LockSession() != 0 ) {
@@ -68,19 +69,21 @@ ReturnCode TextSend( ClientSession& session ) {
         }
         if ( retVal == RET_OK ) {
             // TODO: Create a new window
-            TextPayload payload;
+            TextMsgPayload payload;
             if ( HAL_UI_GetLogin( payload.m_loginDst ) != RET_OK ) {
                 retVal = RET_INVALID_LOGIN;
             } else {
                 Message msg;
                 unsigned sizePayload;
                 std::string buf;
+
+                LOG_I( "Text: \n" );
                 std::getline( std::cin, buf );
                 // Size returns a number of chars without '\0'
                 sizePayload = sizeof( payload.m_loginDst ) + sizeof( payload.m_loginDst ) + buf.size() + 1;
                 // Prepare header
                 msg.m_header.m_len = sizePayload;
-                msg.m_header.m_type = MSGTYPE_TEXT;
+                msg.m_header.m_type = MSGTYPE_TEXT_MSG;
                 // Prepare payload
                 payload.m_text.resize( buf.size() + 1 );
                 buf.copy( payload.m_text.data(), buf.size() );
@@ -93,3 +96,20 @@ ReturnCode TextSend( ClientSession& session ) {
     }
     return retVal;
 }
+
+ReturnCode TextCtrlRec( const Message& msg ) {
+    ReturnCode retVal = RET_OK;
+    TextControlPayload payload;
+
+    LoadPayload( msg, payload );
+    switch( payload.m_control[0] ) {
+    case TEXTCTRL_USERUNLOGGED:
+        LOG_I( "User " << payload.m_login << " is not logged.\n" );
+        break;
+    default:
+        LOG_E( "Unrecognized TextContralValue.\n" );
+        break;
+    }
+    return retVal;
+}
+

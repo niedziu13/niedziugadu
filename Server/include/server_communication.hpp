@@ -17,6 +17,10 @@
 
 ReturnCode ReciveMessage( Message& msg, UserSession& session );
 
-ReturnCode SendMessage( const Message& msg, UserSession& session);
+ReturnCode SendMessage( const Message& msg, UserSession& session );
+
+void SavePayload( Message& msg, const LoggingAnsPayload& payload );
+void SavePayload( Message& msg, const TextControlPayload& payload );
+void LoadPayload( const Message& msg, LoggingReqPayload& payload );
 
 #endif /* SERVER_COMMUNICATION_HPP_ */

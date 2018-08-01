@@ -16,12 +16,14 @@ UserSession::UserSession()
     m_ongoingWrites = 0;
     m_sessionStatus = UserSessionStatus_Inactive;
     memset( m_login, 0, LOGIN_MAX_SIZE );
-    pthread_mutex_init( &m_writeMutex, NULL );
+    pthread_mutex_init( &m_sendMutex, NULL );
+    pthread_mutex_init( &m_sessionMutex, NULL );
 }
 
 UserSession::~UserSession() {
 //    close( m_sock );
-    pthread_mutex_destroy( &m_writeMutex );
+    pthread_mutex_destroy( &m_sendMutex );
+    pthread_mutex_destroy( &m_sessionMutex );
 }
 
 

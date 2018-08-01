@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
                 case ClientOption_PrintFriends:
                     break;
                 case ClientOption_SendMessage:
-                    TextSend( session );
+                    TextMsgSend( session );
                     break;
                 case ClientOption_InvalidOption:
                     break;
@@ -68,22 +68,27 @@ void* HandleRecivingMessages(void *arg) {
 	ClientSession* session = (ClientSession*) arg;
     Message msg;
 
-    if ( ReciveMessage( msg, *session ) == RET_OK ) {
-        switch ( msg.m_header.m_type ) {
-        case MSGTYPE_LOGGING_ANS:
-            LoggingAns( *session, msg );
+    while (1) {
+        if ( ReciveMessage( msg, *session ) == RET_OK ) {
+            switch ( msg.m_header.m_type ) {
+            case MSGTYPE_LOGGING_ANS:
+                LoggingAns( *session, msg );
+                break;
+            case MSGTYPE_TEXT_MSG:
+                TextMsgRec( *session, msg );
+                break;
+            case MSGTYPE_TEXT_CONTROL:
+                TextCtrlRec( msg );
+                break;
+            default:
             break;
-        case MSGTYPE_TEXT:
-            TextRec( *session, msg );
+            }
+
+        } else {
+            std::cout<< "End of connection.\n";
+            session->Close();
             break;
-        default:
-        break;
         }
-
-    } else {
-        std::cout<< "End of connection.\n";
-        session->Close();
     }
-
 	return NULL;
 }

@@ -16,11 +16,15 @@
 typedef uint8_t msgType_t;
 typedef uint16_t msgLen_t;
 
-#define MSGTYPE_TEXT ( (msgType_t) 0x01 )
+#define MSGTYPE_TEXT_MSG ( (msgType_t) 0x01 )
 #define MSGTYPE_LOGGING_REQ ( (msgType_t) 0x02 )
 #define MSGTYPE_LOGGING_ANS ( (msgType_t) 0x03 )
+#define MSGTYPE_TEXT_CONTROL ( (msgType_t) 0x04 )
 
-#define ANS_OK ( (msgType_t) 0x00 )
+#define LOGREQ_RET_OK ( (uint8_t) 0x00 )
+#define LOGREQ_RET_ERROR ( (uint8_t) 0x01 )
+
+#define TEXTCTRL_USERUNLOGGED ( (uint8_t) 0x01 )
 
 #define LOGIN_MAX_SIZE 32U // Including \0 in the string
 #define HASH_SIZE 32U
@@ -73,10 +77,21 @@ struct LoggingAnsPayload {
         |text ...
 
 */
-struct TextPayload {
+struct TextMsgPayload {
     char m_loginSrc[LOGIN_MAX_SIZE];
     char m_loginDst[LOGIN_MAX_SIZE];
     std::vector<char> m_text;
+};
+
+/*
+  Text control payload in memory
+  BYES  0123456701234567012345670123456701234567012345670123456701234567
+        |m_login                        | m_control                    |
+
+*/
+struct TextControlPayload {
+    char m_login[LOGIN_MAX_SIZE];
+    uint8_t m_control[LOGIN_MAX_SIZE];
 };
 
 #endif /* MESSAGE_HPP_ */

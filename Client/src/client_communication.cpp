@@ -108,7 +108,7 @@ void SavePayload( Message& msg, const LoggingReqPayload& payload ) {
     memcpy( msg.m_payload.data() + sizeof( payload.m_login ), payload.m_passHASH, sizeof( payload.m_passHASH ) );
 }
 
-void SavePayload( Message& msg, const TextPayload& payload ) {
+void SavePayload( Message& msg, const TextMsgPayload& payload ) {
     int textSize = msg.m_header.m_len - sizeof( payload.m_loginSrc ) - sizeof( payload.m_loginDst );
     assert( textSize >= 1 );
     msg.m_payload.resize( msg.m_header.m_len );
@@ -122,11 +122,16 @@ void LoadPayload( const Message& msg, LoggingAnsPayload& payload ) {
     memcpy( payload.m_anwser , msg.m_payload.data() + sizeof( payload.m_login ), sizeof( payload.m_anwser) );
 }
 
-void LoadPayload( const Message& msg, TextPayload& payload ) {
+void LoadPayload( const Message& msg, TextControlPayload& payload ) {
+    memcpy( payload.m_login, msg.m_payload.data(), sizeof( payload.m_login ) );
+    memcpy( payload.m_control , msg.m_payload.data() + sizeof( payload.m_login ), sizeof( payload.m_control) );
+}
+
+void LoadPayload( const Message& msg, TextMsgPayload& payload ) {
     int textSize = msg.m_header.m_len - sizeof( payload.m_loginSrc ) - sizeof( payload.m_loginDst );
     assert( textSize >= 1 );
     memcpy( payload.m_loginSrc, msg.m_payload.data(), sizeof( payload.m_loginSrc ) );
     memcpy( payload.m_loginDst, msg.m_payload.data() + sizeof( payload.m_loginSrc ), sizeof( payload.m_loginDst ) );
     payload.m_text.resize( textSize );
-    memcpy( payload.m_text.data() , msg.m_payload.data(), textSize );
+    memcpy( payload.m_text.data() , msg.m_payload.data() + sizeof( payload.m_loginSrc ) + sizeof( payload.m_loginDst ), textSize );
 }

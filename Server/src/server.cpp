@@ -25,29 +25,57 @@ void* HandleNewUser( void* arg) {
         if ( ReciveMessage( msg, *session ) == RET_OK ) {
             switch ( msg.m_header.m_type ) {
             case MSGTYPE_LOGGING_REQ:
-                User us1;
-                memcpy( &us1, msg.m_payload.data(), sizeof( User ) );
-                if ( UserDataBase::Instance().VerifyUser( us1 ) == RET_OK ) {
-                    Message msg_ans;
-                    LoggingAnsPayload payload;
-                    strcpy( payload.m_login, us1.m_login );
-                    payload.m_anwser[0] = ANS_OK;
-                    msg_ans.m_payload.resize( sizeof ( LoggingAnsPayload ) );
-                    memcpy( msg_ans.m_payload.data(), (uint8_t*) &payload, sizeof( LoggingAnsPayload ) );
-                    msg_ans.m_header.m_len = 64;
-                    msg_ans.m_header.m_type = MSGTYPE_LOGGING_ANS;
-                    SendMessage( msg_ans, *session );
-                    LOG_I( us1.m_login << " logged!\n");
-                    session->SetLogin( us1.m_login );
+            {
+                Message msg_ans;
+                LoggingReqPayload payload_req;
+                LoggingAnsPayload payload_ans;
+
+                LoadPayload( msg, payload_req );
+
+                msg_ans.m_header.m_len = sizeof( LoggingAnsPayload );
+                msg_ans.m_header.m_type = MSGTYPE_LOGGING_ANS;
+                strcpy( payload_ans.m_login, payload_req.m_login );
+
+                if ( UserDataBase::Instance().VerifyUser( payload_req ) == RET_OK ) {
+                    payload_ans.m_anwser[0] = LOGREQ_RET_OK;
+                    LOG_I( payload_req.m_login << " logged!\n");
+                    session->SetLogin( payload_req.m_login );
                     session->SetStatus( UserSessionStatus_Logged );
                 } else {
+                    payload_ans.m_anwser[0] = LOGREQ_RET_ERROR;
                     LOG_I("Invalid passes \n");
                 }
+                SavePayload( msg_ans, payload_ans );
+                SendMessage( msg_ans, *session );
                 break;
-            default:
-            break;
             }
+            case MSGTYPE_TEXT_MSG:
+            {
+                // TODO: Find a better way to get the login from the message
+                const char* dst_login = ( const char* ) ( msg.m_payload.data() + LOGIN_MAX_SIZE );
+                UserSession *session_dst = base.GetToSend( dst_login );
+                if( session_dst == NULL ) {
+                    Message msg_ans;
+                    TextControlPayload payload;
+                    strcpy( payload.m_login, dst_login );
+                    payload.m_control[0] = TEXTCTRL_USERUNLOGGED;
+                    SavePayload( msg_ans, payload );
+                    msg_ans.m_header.m_len = sizeof( TextControlPayload );
+                    msg_ans.m_header.m_type = MSGTYPE_TEXT_CONTROL;
+                    LOG_I( "Dst user unlogged " << msg.m_payload.data() + LOGIN_MAX_SIZE <<" \n" );
+                    SendMessage( msg_ans, *session );
+                } else {
+                    LOG_I( "Main: sending msg \n" );
+                    SendMessage( msg, *session_dst );
+                }
 
+                break;
+            }
+            default:
+            {
+                break;
+            }
+            }
         } else {
             std::cout<< "End of connection ?\n";
             session->Close();
@@ -55,8 +83,6 @@ void* HandleNewUser( void* arg) {
         }
     }
 
-//    std::cout<< "New thread user. Sock id: " << sock << "\n";
-//    close(sock);
     return NULL;
 }
 
@@ -78,19 +104,6 @@ int main() {
                 pthread_t thread;
                 LOG_I( "A new user connected. \n" );
                 pthread_create(&thread, NULL, HandleNewUser, (void*)userSock);
-//                char a;
-//                std::cin >> a;
-//                UserSession *session = base.GetToSend("Dawid");
-//                if( session == NULL ) {
-//                    LOG_E( "Main: invalid session \n" );
-//                } else {
-//                    LOG_I( "Main: sending msg \n" );
-//                    Message msg;
-//                    msg.m_header.m_len = 10;
-//                    msg.m_header.m_type = 3;
-//                    msg.m_payload.resize( 10, 3 );
-//                    SendMessage( msg, *session );
-//                }
             }
         }
     }

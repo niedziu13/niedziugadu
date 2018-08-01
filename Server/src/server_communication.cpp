@@ -98,3 +98,20 @@ ReturnCode SendMessage( const Message& msg, UserSession& session) {
     return retVal;
 }
 
+void SavePayload( Message& msg, const LoggingAnsPayload& payload ) {
+    msg.m_payload.resize( sizeof( LoggingAnsPayload ) );
+    memcpy( msg.m_payload.data(), payload.m_login, sizeof( payload.m_login ) );
+    memcpy( msg.m_payload.data() + sizeof( payload.m_login ), payload.m_anwser, sizeof( payload.m_anwser ) );
+}
+
+void SavePayload( Message& msg, const TextControlPayload& payload ) {
+    msg.m_payload.resize( sizeof( TextControlPayload ) );
+    memcpy( msg.m_payload.data(), payload.m_login, sizeof( payload.m_login ) );
+    memcpy( msg.m_payload.data() + sizeof( payload.m_login ), payload.m_control, sizeof( payload.m_control ) );
+}
+
+void LoadPayload( const Message& msg, LoggingReqPayload& payload ) {
+    memcpy( payload.m_login, msg.m_payload.data(), sizeof( payload.m_login ) );
+    memcpy( payload.m_passHASH , msg.m_payload.data() + sizeof( payload.m_passHASH ), sizeof( payload.m_passHASH) );
+}
+

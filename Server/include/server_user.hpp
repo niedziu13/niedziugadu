@@ -23,7 +23,7 @@ class UserDataBase {
 public:
     UserDataBase();
     static UserDataBase& Instance();
-    ReturnCode VerifyUser( const User& user );
+    ReturnCode VerifyUser( const LoggingReqPayload& payload );
 };
 
 
