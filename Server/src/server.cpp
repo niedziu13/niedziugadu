@@ -56,24 +56,6 @@ void* HandleNewUser( void* arg) {
             case MSGTYPE_TEXT_MSG:
             {
                 TextMsg( *session, msg );
-//                // TODO: Find a better way to get the login from the message
-//                const char* dst_login = ( const char* ) ( msg.m_payload.data() + LOGIN_MAX_SIZE );
-//                UserSession *session_dst = sessionBase.GetToSend( dst_login );
-//                if( session_dst == NULL ) {
-//                    Message msg_ans;
-//                    TextControlPayload payload;
-//                    strcpy( payload.m_login, dst_login );
-//                    payload.m_control[0] = TEXTCTRL_USERUNLOGGED;
-//                    SavePayload( msg_ans, payload );
-//                    msg_ans.m_header.m_len = sizeof( TextControlPayload );
-//                    msg_ans.m_header.m_type = MSGTYPE_TEXT_CONTROL;
-//                    LOG_I( "Dst user unlogged " << msg.m_payload.data() + LOGIN_MAX_SIZE <<" \n" );
-//                    SendMessage( msg_ans, *session );
-//                } else {
-//                    LOG_I( "Main: sending msg \n" );
-//                    SendMessage( msg, *session_dst );
-//                }
-
                 break;
             }
             default:
