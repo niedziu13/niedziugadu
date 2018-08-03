@@ -66,5 +66,6 @@ public:
     UserSession* GetNewSession( int sock );
 };
 
+extern UserSessionDataBase sessionBase;
 
 #endif /* SERVER_USER_SESSION_HPP_ */

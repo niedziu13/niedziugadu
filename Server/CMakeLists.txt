@@ -17,6 +17,7 @@ set(SERVER_HEADERS
 	${SERVER_PATH}/include/server_memory.hpp
 	${SERVER_PATH}/include/server_user_session.hpp
 	${SERVER_PATH}/include/server_communication.hpp
+	${SERVER_PATH}/include/server_commands.hpp
 	)
 
 set(SERVER_SOURCES 
@@ -24,6 +25,7 @@ set(SERVER_SOURCES
     ${SERVER_PATH}/src/server.cpp
     ${SERVER_PATH}/src/server_session.cpp
     ${SERVER_PATH}/src/server_user.cpp
+    ${SERVER_PATH}/src/server_commands.cpp
 	${SERVER_PATH}/src/server_user_session.cpp
     )
 

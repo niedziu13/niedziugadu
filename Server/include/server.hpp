@@ -8,5 +8,6 @@
 #ifndef SERVER_HPP_
 #define SERVER_HPP_
 
+static void* HandleNewUser( void* arg);
 
 #endif /* SERVER_HPP_ */

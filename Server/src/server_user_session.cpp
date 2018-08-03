@@ -11,6 +11,8 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
+UserSessionDataBase sessionBase;
+
 UserSession::UserSession()
 {
     m_ongoingWrites = 0;
