@@ -11,6 +11,7 @@
 #include <string.h>
 
 void LoggingReq( UserSession& session, const Message& msg ) {
+// TODO: Check if the user is logged (requested and current)
     Message msg_ans;
     LoggingReqPayload payload_req;
     LoggingAnsPayload payload_ans;
