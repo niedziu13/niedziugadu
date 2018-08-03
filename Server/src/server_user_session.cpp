@@ -82,31 +82,27 @@ int UserSession::GetSocket() const {
     return m_sock;
 }
 
-ReturnCode UserSession::LockSend( const timespec* time ) {
-    ReturnCode retVal = RET_OK;
-    if( pthread_mutex_timedlock( &m_sendMutex, time ) != 0 ) {
-        retVal = RET_MUTEX_ERROR;
-    }
-    return retVal;
+int UserSession::LockSend( const timespec* time ) {
+    return pthread_mutex_timedlock( &m_sendMutex, time );
 }
 
-ReturnCode UserSession::UnlockSend() {
-    ReturnCode retVal = RET_OK;
+int UserSession::UnlockSend() {
+    int retVal = 0;
     if ( ( pthread_mutex_unlock( &m_sendMutex ) != 0 ) ) {
-        retVal = RET_MUTEX_ERROR;
+        retVal = -1;
     }
     if( pthread_mutex_lock( &m_sessionMutex ) != 0 ) {
-        retVal = RET_MUTEX_ERROR;
+        retVal = -1;
     } else {
         if ( --m_ongoingWrites < 0 ) {
             m_ongoingWrites = 0;
             LOG_E( "Invalid ongoingWrites number\n");
         }
         if( pthread_cond_signal( &m_cond ) != 0 ) {
-            retVal = RET_VAR_COND_ERROR;
+            retVal = -2;
         }
         if( pthread_mutex_unlock( &m_sessionMutex ) != 0 ) {
-            retVal = RET_MUTEX_ERROR;
+            retVal = -1;
         }
     }
     return retVal;

@@ -1,6 +1,7 @@
 #include <client_menu.hpp>
 #include <client_communication.hpp>
 #include "client_commands.hpp"
+#include "message.hpp"
 #include <HAL_UI.hpp>
 #include <client.hpp>
 #include <pthread.h>

@@ -28,7 +28,7 @@ enum UserSessionStatus {
     UserSessionStatus_Inactive
 };
 
-class UserSession {
+class UserSession: public Session {
     char m_login[LOGIN_MAX_SIZE];
     pthread_mutex_t m_writeMutex;
     int m_sock;
@@ -48,8 +48,8 @@ public:
     const char* GetLogin() const;
     int GetSocket() const;
     ReturnCode Reserve( int sock );
-    ReturnCode LockSend( const timespec* time );
-    ReturnCode UnlockSend();
+    int LockSend( const timespec* time );
+    int UnlockSend();
     ReturnCode LockComingSend( const char* login );
     ReturnCode Close();
 };

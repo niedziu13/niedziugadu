@@ -1,18 +1,26 @@
 /*
- * server_communication.cpp
+ * message.cpp
  *
- *  Created on: Jul 26, 2018
+ *  Created on: Aug 3, 2018
  *      Author: niedziu
  */
 
-#include "server_communication.hpp"
+#include "message.hpp"
 #include <unistd.h>
 #include <string.h>
-#include "server_memory.hpp"
-#include "server_logger.hpp"
-#include <pthread.h>
 
-ReturnCode ReciveMessage( Message& msg, UserSession& session ) {
+#ifdef client
+#include "HAL_UI.hpp"
+#include "HAL_memory.hpp"
+#include "client_communication.hpp"
+#endif
+#ifdef server
+#include "server_logger.hpp"
+#include "server_memory.hpp"
+#include "server_communication.hpp"
+#endif
+
+ReturnCode ReciveMessage( Message& msg, Session& session ) {
     ReturnCode retVal = RET_OK;
     int res;
     int res2;
@@ -24,7 +32,7 @@ ReturnCode ReciveMessage( Message& msg, UserSession& session ) {
         LOG_E( "Connection error. \n" );
         retVal = RET_COMMUNICATION_ERROR;
     } else if ( res == 0 ) {
-        LOG_E( "Connection closed. \n" );
+        LOG_E( "Read = 0. Connection closed. \n" );
         retVal = RET_COMMUNICATION_ERROR;
     } else {
         if ( static_cast<uint16_t>( res ) != msg_header_len ) {
@@ -59,7 +67,7 @@ ReturnCode ReciveMessage( Message& msg, UserSession& session ) {
 }
 
 // Function prepare the message according to the frame definition in message.hpp
-ReturnCode SendMessage( const Message& msg, UserSession& session) {
+ReturnCode SendMessage( const Message& msg, Session& session) {
     ReturnCode retVal = RET_OK;
     timespec waitingTime;
     int msg_len = sizeof( MessageHeader ) + msg.m_header.m_len;
@@ -77,7 +85,7 @@ ReturnCode SendMessage( const Message& msg, UserSession& session) {
     waitingTime.tv_nsec = WAITING_SEND_TIME_NS;
 
     // Mutex blocked
-    if ( session.LockSend( &waitingTime ) != RET_OK ) {
+    if ( session.LockSend( &waitingTime ) != 0 ) {
         LOG_E( "Unable to lock mutex during sending " );
         retVal = RET_MUTEX_ERROR;
     } else {
@@ -88,14 +96,21 @@ ReturnCode SendMessage( const Message& msg, UserSession& session) {
             retVal = RET_COMMUNICATION_ERROR;
         }
 
-        if ( session.UnlockSend() != RET_OK ) {
+        if ( session.UnlockSend() != 0 ) {
             LOG_E( "Unlocking mutex error." );
             retVal = RET_MUTEX_ERROR;
         }
     }
+
     delete buf;
 
     return retVal;
+}
+
+void SavePayload( Message& msg, const LoggingReqPayload& payload ) {
+    msg.m_payload.resize( sizeof( LoggingReqPayload ) );
+    memcpy( msg.m_payload.data(), payload.m_login, sizeof( payload.m_login ) );
+    memcpy( msg.m_payload.data() + sizeof( payload.m_login ), payload.m_passHASH, sizeof( payload.m_passHASH ) );
 }
 
 void SavePayload( Message& msg, const LoggingAnsPayload& payload ) {
@@ -104,10 +119,24 @@ void SavePayload( Message& msg, const LoggingAnsPayload& payload ) {
     memcpy( msg.m_payload.data() + sizeof( payload.m_login ), payload.m_anwser, sizeof( payload.m_anwser ) );
 }
 
+void SavePayload( Message& msg, const TextMsgPayload& payload ) {
+    int textSize = msg.m_header.m_len - sizeof( payload.m_loginSrc ) - sizeof( payload.m_loginDst );
+    assert( textSize >= 1 );
+    msg.m_payload.resize( msg.m_header.m_len );
+    memcpy( msg.m_payload.data(), payload.m_loginSrc, sizeof( payload.m_loginSrc ) );
+    memcpy( msg.m_payload.data() + sizeof( payload.m_loginSrc ), payload.m_loginDst, sizeof( payload.m_loginDst ) );
+    memcpy( msg.m_payload.data() + sizeof( payload.m_loginSrc ) + sizeof( payload.m_loginDst ), payload.m_text.data(), textSize );
+}
+
 void SavePayload( Message& msg, const TextControlPayload& payload ) {
     msg.m_payload.resize( sizeof( TextControlPayload ) );
     memcpy( msg.m_payload.data(), payload.m_login, sizeof( payload.m_login ) );
     memcpy( msg.m_payload.data() + sizeof( payload.m_login ), payload.m_control, sizeof( payload.m_control ) );
+}
+
+void LoadPayload( const Message& msg, LoggingAnsPayload& payload ) {
+    memcpy( payload.m_login, msg.m_payload.data(), sizeof( payload.m_login ) );
+    memcpy( payload.m_anwser , msg.m_payload.data() + sizeof( payload.m_login ), sizeof( payload.m_anwser) );
 }
 
 void LoadPayload( const Message& msg, LoggingReqPayload& payload ) {
@@ -115,3 +144,16 @@ void LoadPayload( const Message& msg, LoggingReqPayload& payload ) {
     memcpy( payload.m_passHASH , msg.m_payload.data() + sizeof( payload.m_passHASH ), sizeof( payload.m_passHASH) );
 }
 
+void LoadPayload( const Message& msg, TextControlPayload& payload ) {
+    memcpy( payload.m_login, msg.m_payload.data(), sizeof( payload.m_login ) );
+    memcpy( payload.m_control , msg.m_payload.data() + sizeof( payload.m_login ), sizeof( payload.m_control) );
+}
+
+void LoadPayload( const Message& msg, TextMsgPayload& payload ) {
+    int textSize = msg.m_header.m_len - sizeof( payload.m_loginSrc ) - sizeof( payload.m_loginDst );
+    assert( textSize >= 1 );
+    memcpy( payload.m_loginSrc, msg.m_payload.data(), sizeof( payload.m_loginSrc ) );
+    memcpy( payload.m_loginDst, msg.m_payload.data() + sizeof( payload.m_loginSrc ), sizeof( payload.m_loginDst ) );
+    payload.m_text.resize( textSize );
+    memcpy( payload.m_text.data() , msg.m_payload.data() + sizeof( payload.m_loginSrc ) + sizeof( payload.m_loginDst ), textSize );
+}

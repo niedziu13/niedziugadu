@@ -21,7 +21,7 @@ enum ClientSessionStatus {
     ClientSessionStatus_Logged
 };
 
-class ClientSession {
+class ClientSession: public Session {
     struct sockaddr_in m_serverAddress;
     int m_serverSocket;
     ClientSessionStatus m_status;

@@ -8,8 +8,8 @@
 #ifndef CLIENT_COMMANDS_HPP_
 #define CLIENT_COMMANDS_HPP_
 
-#include <client_communication.hpp>
-
+#include "message.hpp"
+#include "client_session.hpp"
 
 #endif /* CLIENT_COMMANDS_HPP_ */
 

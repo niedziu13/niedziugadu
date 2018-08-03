@@ -4,11 +4,12 @@ message("Building server")
 
 set(SERVER_TARGET server)
 
-set(CPP_COMPILE_FLAGS "-g -Wall -std=c++11")
+set(CPP_COMPILE_FLAGS "-g -Wall -std=c++11 -D ${SERVER_TARGET}")
 set(CPP_LINK_FLAGS "-pthread")
 
 set(SERVER_HEADERS 
 	${PROJECT_PATH}/include/defines.hpp
+	${PROJECT_PATH}/include/message.hpp
 	${SERVER_PATH}/include/server_session.hpp
 	${SERVER_PATH}/include/server.hpp
 	${SERVER_PATH}/include/server_logger.hpp
@@ -19,11 +20,11 @@ set(SERVER_HEADERS
 	)
 
 set(SERVER_SOURCES 
+	${PROJECT_PATH}/src/message.cpp
     ${SERVER_PATH}/src/server.cpp
     ${SERVER_PATH}/src/server_session.cpp
     ${SERVER_PATH}/src/server_user.cpp
 	${SERVER_PATH}/src/server_user_session.cpp
-	${SERVER_PATH}/src/server_communication.cpp
     )
 
 add_executable(${SERVER_TARGET} ${SERVER_SOURCES} ${SERVER_HEADERS})

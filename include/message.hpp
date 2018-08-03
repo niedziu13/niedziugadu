@@ -9,6 +9,7 @@
 #define MESSAGE_HPP_
 
 #include <stdint.h>
+#include <time.h>
 #include <vector>
 #include "defines.hpp"
 #define PAYLOAD_SIZE 256
@@ -28,6 +29,14 @@ typedef uint16_t msgLen_t;
 
 #define LOGIN_MAX_SIZE 32U // Including \0 in the string
 #define HASH_SIZE 32U
+
+
+class Session {
+public:
+    virtual int GetSocket() const = 0;
+    virtual int LockSend( const timespec* time ) = 0;
+    virtual int UnlockSend() = 0;
+};
 
 // Every variable is written in LittleEndian
 
@@ -93,5 +102,19 @@ struct TextControlPayload {
     char m_login[LOGIN_MAX_SIZE];
     uint8_t m_control[LOGIN_MAX_SIZE];
 };
+
+
+ReturnCode SendMessage( const Message& msg, Session& session );
+ReturnCode ReciveMessage( Message& msg, Session& session );
+
+void SavePayload( Message& msg, const LoggingReqPayload& payload );
+void SavePayload( Message& msg, const LoggingAnsPayload& payload );
+void SavePayload( Message& msg, const TextMsgPayload& payload );
+void SavePayload( Message& msg, const TextControlPayload& payload );
+
+void LoadPayload( const Message& msg, LoggingAnsPayload& payload );
+void LoadPayload( const Message& msg, LoggingReqPayload& payload );
+void LoadPayload( const Message& msg, TextMsgPayload& payload );
+void LoadPayload( const Message& msg, TextControlPayload& payload );
 
 #endif /* MESSAGE_HPP_ */
